@@ -53,7 +53,7 @@ const generateFlashcardsFlow = ai.defineFlow(
     outputSchema: GenerateFlashcardsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input, {model: 'googleai/flan-t5-large'});
+    const {output} = await prompt(input);
     return output!;
   }
 );

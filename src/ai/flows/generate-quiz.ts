@@ -58,9 +58,7 @@ const generateQuizFlow = ai.defineFlow(
     outputSchema: GenerateQuizOutputSchema,
   },
   async input => {
-    const {output} = await generateQuizPrompt(input, {
-      model: 'googleai/flan-t5-large',
-    });
+    const {output} = await generateQuizPrompt(input);
     return output!;
   }
 );
