@@ -10,16 +10,20 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const GenerateFlashcardsInputSchema = z
-  .string()
-  .describe('The topic for which to generate flashcards.');
+const GenerateFlashcardsInputSchema = z.object({
+  topic: z.string().describe('The topic for which to generate flashcards.'),
+});
 export type GenerateFlashcardsInput = z.infer<
   typeof GenerateFlashcardsInputSchema
 >;
 
 const FlashcardSchema = z.object({
-  front: z.string().describe('The question or term for the front of the flashcard.'),
-  back: z.string().describe('The answer or definition for the back of the flashcard.'),
+  front: z
+    .string()
+    .describe('The question or term for the front of the flashcard.'),
+  back: z
+    .string()
+    .describe('The answer or definition for the back of the flashcard.'),
 });
 
 const GenerateFlashcardsOutputSchema = z
@@ -41,9 +45,12 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateFlashcardsOutputSchema},
   prompt: `You are an AI assistant that generates flashcards.
 
-Generate a list of flashcards, each with a 'front' and 'back', based on the following topic. Ensure the output is a JSON array of objects, each containing 'front' and 'back' string fields.
+Generate a list of 5 flashcards, each with a 'front' and 'back', based on the following topic.
+Provide the output in JSON format, strictly adhering to the following schema:
 
-Topic: {{{this}}}`, // 'this' refers to the string input
+Output Schema: {{{output.schema}}}
+
+Topic: {{{topic}}}`,
 });
 
 const generateFlashcardsFlow = ai.defineFlow(

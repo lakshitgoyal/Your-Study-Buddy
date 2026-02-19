@@ -117,7 +117,7 @@ export default function StudyBuddyPage() {
           responseType = 'quiz';
           break;
         case 'flashcards':
-          responseContent = await generateFlashcards(input);
+          responseContent = await generateFlashcards({ topic: input });
           responseType = 'flashcards';
           break;
       }
