@@ -4,7 +4,7 @@
  *
  * - summarizeNotes - A function that handles the summarization process.
  * - SummarizeNotesInput - The input type for the summarizeNotes function.
- * - SummarizeNotesOutput - The return type for the summarizeNotes function.
+ * - SummarizeNotesOutput - The return type for the summarizeNotes function. 
  */
 
 import { ai } from '@/ai/genkit';
