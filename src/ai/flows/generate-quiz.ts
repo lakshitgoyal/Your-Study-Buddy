@@ -4,7 +4,7 @@
  *
  * - generateQuiz - A function that generates a multiple-choice quiz.
  * - GenerateQuizInput - The input type for the generateQuiz function.
- * - GenerateQuizOutput - The return type for the generateQuiz function.
+ * - GenerateQuizOutput - The return type for the generateQuiz function. 
  */
 
 import {ai} from '@/ai/genkit';
