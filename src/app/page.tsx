@@ -118,11 +118,11 @@ export default function StudyBuddyPage() {
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append('pdf_file', docFile);
+    formData.append('file', docFile);
 
     try {
-      // In a real application, this URL should come from an environment variable.
-      const response = await fetch('http://localhost:8000/upload-pdf', {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/upload-file`, {
         method: 'POST',
         body: formData,
       });

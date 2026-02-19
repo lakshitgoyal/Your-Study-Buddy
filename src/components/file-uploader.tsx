@@ -44,6 +44,7 @@ export default function FileUploader({
         ref={fileInputRef}
         onChange={handleInputChange}
         className="hidden"
+        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.txt,.rtf,.jpeg,.jpg,.png,.gif"
       />
       {!file && (
         <Button variant="outline" className="w-full" onClick={handleFileSelect}>
