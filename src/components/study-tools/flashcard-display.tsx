@@ -36,13 +36,13 @@ export default function FlashcardDisplay({ flashcards }: FlashcardDisplayProps) 
           {flashcards.map((card, index) => (
             <CarouselItem key={index}>
               <div
-                className={`flashcard w-full h-64 perspective-[1000px] cursor-pointer`}
+                className={`flashcard w-full h-64 perspective-[1000px] cursor-pointer ${
+                  flippedStates[index] ? 'flipped' : ''
+                }`}
                 onClick={() => handleFlip(index)}
               >
                 <div
-                  className={`flashcard-inner relative w-full h-full ${
-                    flippedStates[index] ? 'flipped' : ''
-                  }`}
+                  className={`flashcard-inner relative w-full h-full`}
                 >
                   {/* Front */}
                   <div className="flashcard-front absolute w-full h-full">
