@@ -2,7 +2,7 @@
 /**
  * @fileOverview A Genkit flow for explaining concepts.
  *
- * - explainConcept - A function that handles the concept explanation process.
+ * - explainConcept - A function that handles the concept explanation process. 
  * - ExplainConceptInput - The input type for the explainConcept function.
  * - ExplainConceptOutput - The return type for the explainConcept function.
  */
