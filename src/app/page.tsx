@@ -65,8 +65,8 @@ const modeConfig = {
   },
   pdf: {
     icon: FileSearch,
-    label: 'Ask from PDF',
-    placeholder: 'Ask a question about the uploaded PDF...',
+    label: 'Ask from Document',
+    placeholder: 'Ask a question about the uploaded document...',
   },
 };
 
@@ -75,8 +75,8 @@ export default function StudyBuddyPage() {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<StudyMode>('explain');
   const [isLoading, setIsLoading] = useState(false);
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [pdfUploaded, setPdfUploaded] = useState(false);
+  const [docFile, setDocFile] = useState<File | null>(null);
+  const [docUploaded, setDocUploaded] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -99,34 +99,26 @@ export default function StudyBuddyPage() {
     setMode(newMode);
     setInput('');
     if (newMode !== 'pdf') {
-      setPdfFile(null);
-      setPdfUploaded(false);
+      setDocFile(null);
+      setDocUploaded(false);
     }
   };
 
   const handleFileChange = (file: File | null) => {
     if (file) {
-      if (file.type !== 'application/pdf') {
-        toast({
-          variant: 'destructive',
-          title: 'Invalid File Type',
-          description: 'Please upload a PDF file.',
-        });
-        return;
-      }
-      setPdfFile(file);
-      setPdfUploaded(false);
+      setDocFile(file);
+      setDocUploaded(false);
     } else {
-      setPdfFile(null);
+      setDocFile(null);
     }
   };
 
   const handleUpload = async () => {
-    if (!pdfFile) return;
+    if (!docFile) return;
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append('pdf_file', pdfFile);
+    formData.append('pdf_file', docFile);
 
     try {
       // In a real application, this URL should come from an environment variable.
@@ -137,17 +129,17 @@ export default function StudyBuddyPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'PDF upload failed');
+        throw new Error(errorData.detail || 'Document upload failed');
       }
 
-      setPdfUploaded(true);
+      setDocUploaded(true);
       toast({
         title: 'Success',
-        description: 'PDF uploaded and processed successfully.',
+        description: 'Document uploaded and processed successfully.',
         action: <CheckCircle className="text-green-500" />,
       });
     } catch (error: any) {
-      setPdfUploaded(false);
+      setDocUploaded(false);
       toast({
         variant: 'destructive',
         title: 'Upload Failed',
@@ -162,11 +154,11 @@ export default function StudyBuddyPage() {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    if (mode === 'pdf' && !pdfUploaded) {
+    if (mode === 'pdf' && !docUploaded) {
       toast({
         variant: 'destructive',
-        title: 'PDF Not Ready',
-        description: 'Please upload and process a PDF before asking questions.',
+        title: 'Document Not Ready',
+        description: 'Please upload and process a document before asking questions.',
       });
       return;
     }
@@ -264,7 +256,7 @@ export default function StudyBuddyPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Upload className="h-5 w-5" />
-                PDF Upload
+                Document Upload
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -272,8 +264,8 @@ export default function StudyBuddyPage() {
                 onFileChange={handleFileChange}
                 onUpload={handleUpload}
                 isUploading={isUploading}
-                isUploaded={pdfUploaded}
-                file={pdfFile}
+                isUploaded={docUploaded}
+                file={docFile}
               />
             </CardContent>
           </Card>
@@ -363,7 +355,7 @@ export default function StudyBuddyPage() {
           <div ref={messagesEndRef} />
         </div>
         
-        {mode === 'pdf' && !pdfUploaded && (
+        {mode === 'pdf' && !docUploaded && (
           <div className="p-4 border-t border-border bg-background/50 md:hidden">
             <Card className="bg-background">
               <CardContent className="p-4">
@@ -371,8 +363,8 @@ export default function StudyBuddyPage() {
                   onFileChange={handleFileChange}
                   onUpload={handleUpload}
                   isUploading={isUploading}
-                  isUploaded={pdfUploaded}
-                  file={pdfFile}
+                  isUploaded={docUploaded}
+                  file={docFile}
                 />
               </CardContent>
             </Card>
@@ -394,7 +386,7 @@ export default function StudyBuddyPage() {
                   handleSubmit(e);
                 }
               }}
-              disabled={isLoading || (mode === 'pdf' && !pdfUploaded)}
+              disabled={isLoading || (mode === 'pdf' && !docUploaded)}
             />
             <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
               {isLoading ? (

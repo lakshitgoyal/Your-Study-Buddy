@@ -44,12 +44,11 @@ export default function FileUploader({
         ref={fileInputRef}
         onChange={handleInputChange}
         className="hidden"
-        accept="application/pdf"
       />
       {!file && (
         <Button variant="outline" className="w-full" onClick={handleFileSelect}>
           <Upload className="mr-2 h-4 w-4" />
-          Select PDF
+          Select File
         </Button>
       )}
 
