@@ -8,12 +8,8 @@ import {
   ScrollText,
   FileQuestion,
   Layers,
-  FileSearch,
   Send,
   Loader2,
-  Upload,
-  CheckCircle,
-  XCircle,
 } from 'lucide-react';
 
 import type { StudyMode, Message, QuizQuestion, Flashcard } from '@/lib/types';
@@ -21,7 +17,6 @@ import { explainConcept } from '@/ai/flows/explain-concept';
 import { summarizeNotes } from '@/ai/flows/summarize-notes-flow';
 import { generateQuiz } from '@/ai/flows/generate-quiz';
 import { generateFlashcards } from '@/ai/flows/generate-flashcards-flow';
-import { askFromPdf } from '@/ai/flows/ask-from-pdf-flow';
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -36,7 +31,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import Logo from '@/components/logo';
-import FileUploader from '@/components/file-uploader';
 import QuizDisplay from '@/components/study-tools/quiz-display';
 import FlashcardDisplay from '@/components/study-tools/flashcard-display';
 import { Separator } from '@/components/ui/separator';
@@ -63,11 +57,6 @@ const modeConfig = {
     label: 'Generate Flashcards',
     placeholder: 'e.g., "JavaScript data types"',
   },
-  pdf: {
-    icon: FileSearch,
-    label: 'Ask from Document',
-    placeholder: 'Ask a question about the uploaded document...',
-  },
 };
 
 export default function StudyBuddyPage() {
@@ -75,9 +64,6 @@ export default function StudyBuddyPage() {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<StudyMode>('explain');
   const [isLoading, setIsLoading] = useState(false);
-  const [docFile, setDocFile] = useState<File | null>(null);
-  const [docUploaded, setDocUploaded] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -98,70 +84,11 @@ export default function StudyBuddyPage() {
   const handleModeChange = (newMode: StudyMode) => {
     setMode(newMode);
     setInput('');
-    if (newMode !== 'pdf') {
-      setDocFile(null);
-      setDocUploaded(false);
-    }
-  };
-
-  const handleFileChange = (file: File | null) => {
-    if (file) {
-      setDocFile(file);
-      setDocUploaded(false);
-    } else {
-      setDocFile(null);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!docFile) return;
-    setIsUploading(true);
-
-    const formData = new FormData();
-    formData.append('file', docFile);
-
-    try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${backendUrl}/upload-file`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Document upload failed');
-      }
-
-      setDocUploaded(true);
-      toast({
-        title: 'Success',
-        description: 'Document uploaded and processed successfully.',
-        action: <CheckCircle className="text-green-500" />,
-      });
-    } catch (error: any) {
-      setDocUploaded(false);
-      toast({
-        variant: 'destructive',
-        title: 'Upload Failed',
-        description: error.message || 'An unknown error occurred.',
-      });
-    } finally {
-      setIsUploading(false);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-
-    if (mode === 'pdf' && !docUploaded) {
-      toast({
-        variant: 'destructive',
-        title: 'Document Not Ready',
-        description: 'Please upload and process a document before asking questions.',
-      });
-      return;
-    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -192,10 +119,6 @@ export default function StudyBuddyPage() {
         case 'flashcards':
           responseContent = await generateFlashcards(input);
           responseType = 'flashcards';
-          break;
-        case 'pdf':
-          const answer = await askFromPdf({ question: input });
-          responseContent = answer.answer;
           break;
       }
 
@@ -250,26 +173,6 @@ export default function StudyBuddyPage() {
             </SelectContent>
           </Select>
         </div>
-
-        {mode === 'pdf' && (
-          <Card className="bg-background">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Upload className="h-5 w-5" />
-                Document Upload
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <FileUploader
-                onFileChange={handleFileChange}
-                onUpload={handleUpload}
-                isUploading={isUploading}
-                isUploaded={docUploaded}
-                file={docFile}
-              />
-            </CardContent>
-          </Card>
-        )}
       </aside>
 
       {/* Main Content */}
@@ -355,22 +258,6 @@ export default function StudyBuddyPage() {
           <div ref={messagesEndRef} />
         </div>
         
-        {mode === 'pdf' && !docUploaded && (
-          <div className="p-4 border-t border-border bg-background/50 md:hidden">
-            <Card className="bg-background">
-              <CardContent className="p-4">
-                <FileUploader
-                  onFileChange={handleFileChange}
-                  onUpload={handleUpload}
-                  isUploading={isUploading}
-                  isUploaded={docUploaded}
-                  file={docFile}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
         {/* Chat Input */}
         <div className="p-4 border-t border-border bg-card">
           <form onSubmit={handleSubmit} className="flex items-center gap-4">
@@ -386,7 +273,7 @@ export default function StudyBuddyPage() {
                   handleSubmit(e);
                 }
               }}
-              disabled={isLoading || (mode === 'pdf' && !docUploaded)}
+              disabled={isLoading}
             />
             <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
               {isLoading ? (

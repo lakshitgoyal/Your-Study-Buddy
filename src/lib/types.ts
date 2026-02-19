@@ -1,7 +1,7 @@
 import type { GenerateQuizOutput } from "@/ai/flows/generate-quiz";
 import type { GenerateFlashcardsOutput } from "@/ai/flows/generate-flashcards-flow";
 
-export type StudyMode = "explain" | "summarize" | "quiz" | "flashcards" | "pdf";
+export type StudyMode = "explain" | "summarize" | "quiz" | "flashcards";
 
 export type Message = {
   id: string;
